@@ -8,12 +8,11 @@ exit_flag = False
 def show_mouse_position():
     try:
         while True:
-            # 現在のマウス座標を取得
             x, y = pyautogui.position()
             print(f"Mouse Position: x = {x}, y = {y}")
-            time.sleep(1)  # 1秒ごとに座標を表示
+            time.sleep(1) 
     except KeyboardInterrupt:
-        print("\n終了します。")
+        print("\n keybord interrupt!!! exit... ")
 
 def click_at_position(x, y):
     try:
@@ -26,35 +25,36 @@ def click_at_position(x, y):
 def on_press(key):
     global exit_flag
     try:
-        # キーボードが押されたときの処理
         if key == keyboard.Key.esc:
             exit_flag = True
     except Exception as e:
         print(f"Error: {e}")
 
 def watch_keyboard():
-    # キーボード監視用のリスナーを作成
+    # create keyboard lestner 
     with keyboard.Listener(on_press=on_press) as listener:
         listener.join()
 
 if __name__ == "__main__":
-    # キーボード監視用のスレッドを開始
+    # start observe input thered
     keyboard_thread = threading.Thread(target=watch_keyboard)
     keyboard_thread.daemon = True  # デーモンスレッドに設定
     keyboard_thread.start()
 
-    click_at_position(4949, 796)  # ここにクリックしたい座標を指定
+    # クリックしたい座標
+    posX = 4980
+    posY = 796
 
-    # 10回クリックする
+    click_at_position(posX, posY)
+
     for _ in range(500):
         if exit_flag:
             exit(0)
 
-        click_at_position(4980, 796)  # ここにクリックしたい座標を指定
-        time.sleep(2)  # 10second wait
+        click_at_position(posX, posY)
+        time.sleep(2)
 
-    # マウス座標の表示を開始
     # show_mouse_position()
 
-    # キーボード監視スレッドが終了するまで待機
+    # wait end of the keyboatd thread 
     keyboard_thread.join()
