@@ -1,4 +1,5 @@
 from pynput import keyboard
+import sys
 import pyautogui
 import time
 import threading
@@ -6,11 +7,16 @@ import threading
 exit_flag = False
 
 def show_mouse_position():
+    global exit_flag
+    
     try:
         while True:
-            x, y = pyautogui.position()
-            print(f"Mouse Position: x = {x}, y = {y}")
-            time.sleep(1) 
+            if exit_flag:
+                sys.exit(1)
+            else:    
+                x, y = pyautogui.position()
+                print(f"Mouse Position: x = {x}, y = {y}")
+                time.sleep(1) 
     except KeyboardInterrupt:
         print("\n keybord interrupt!!! exit... ")
 
@@ -22,39 +28,65 @@ def click_at_position(x, y):
     except Exception as e:
         print(f"Error: {e}")
 
-def on_press(key):
-    global exit_flag
-    try:
-        if key == keyboard.Key.esc:
-            exit_flag = True
-    except Exception as e:
-        print(f"Error: {e}")
+class EscDownListener:
+    def __enter__(self):
+        print("Listener: Entering the context")
+        self.listener = None
+        return self
 
-def watch_keyboard():
-    # create keyboard lestner 
-    with keyboard.Listener(on_press=on_press) as listener:
-        listener.join()
+    def __exit__(self, exc_type, exc_value, traceback):
+        print("Listener: Exiting the context")
+
+    def on_press(self, key):
+        global exit_flag
+        try:
+            if key == keyboard.Key.esc:
+                print("ESC key pressed. Stopping listener.")
+                self.listener.stop()
+                exit_flag = True
+        except Exception as e:
+            print(f"Error: {e}")
+
+    def watch_keyboard(self):
+        self.listener = keyboard.Listener(on_press=self.on_press)
+        self.listener.start()
+        self.listener.join()
 
 if __name__ == "__main__":
+  
+      # get commandline arguments
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <argument>")
+        sys.exit(1)
+
+    listener = EscDownListener()
+
     # start observe input thered
-    keyboard_thread = threading.Thread(target=watch_keyboard)
-    keyboard_thread.daemon = True  # デーモンスレッドに設定
+    keyboard_thread = threading.Thread(target=listener.watch_keyboard)
+    keyboard_thread.daemon = True
     keyboard_thread.start()
 
-    # クリックしたい座標
-    posX = 4980
-    posY = 796
+    argument = sys.argv[1]
 
-    click_at_position(posX, posY)
+    if argument == "exec":
 
-    for _ in range(500):
-        if exit_flag:
-            exit(0)
+        for i in range(2):
+            centerX = 4582
+            centerY = 820
 
-        click_at_position(posX, posY)
-        time.sleep(2)
+            click_at_position(centerX, centerY)
+            time.sleep(3)
 
-    # show_mouse_position()
+        # クリックしたい座標
+        posX = 4980
+        posY = 796
+        for _ in range(300):
+            if exit_flag:
+                exit(0)
 
-    # wait end of the keyboatd thread 
-    keyboard_thread.join()
+            click_at_position(posX, posY)
+            time.sleep(2)
+    elif argument == "show":
+        show_mouse_position()
+    else:
+        print("unknown options...")
