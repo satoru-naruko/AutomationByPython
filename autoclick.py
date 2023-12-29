@@ -1,8 +1,12 @@
 from pynput import keyboard
+from config.config import Config
+
 import sys
 import pyautogui
 import time
 import threading
+
+
 
 exit_flag = False
 
@@ -24,7 +28,6 @@ def click_at_position(x, y):
     try:
         # 指定した座標にクリック
         pyautogui.click(x, y)
-        print(f"Click at Position: x = {x}, y = {y}")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -52,6 +55,16 @@ class EscDownListener:
         self.listener.start()
         self.listener.join()
 
+def execute_click(config):
+    for click_config in sorted(config, key=lambda x: x["index"]):
+        if exit_flag:
+            exit(0)
+
+        x, y, delay_seconds = click_config["x"], click_config["y"], click_config["delay_seconds"]
+        time.sleep(delay_seconds)
+        click_at_position(x, y)
+        print(f"Clicked at ({x}, {y}) - Index: {click_config['index']}")
+
 if __name__ == "__main__":
   
       # get commandline arguments
@@ -70,22 +83,15 @@ if __name__ == "__main__":
 
     if argument == "exec":
 
-        for i in range(2):
-            centerX = 4582
-            centerY = 820
+        config_file = "data/click_config.json"
+        config_instance = Config(config_file)
+        click_config = config_instance.get_config()
+        print(click_config)
+        
+        for _ in range(100):
+            execute_click(click_config)
+            time.sleep(1)
 
-            click_at_position(centerX, centerY)
-            time.sleep(3)
-
-        # クリックしたい座標
-        posX = 4980
-        posY = 796
-        for _ in range(300):
-            if exit_flag:
-                exit(0)
-
-            click_at_position(posX, posY)
-            time.sleep(2)
     elif argument == "show":
         show_mouse_position()
     else:
