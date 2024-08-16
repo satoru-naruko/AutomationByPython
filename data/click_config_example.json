@@ -1,0 +1,19 @@
+{
+    "loop_count": 3,
+    "initial_message": "starting the automation...",
+    "finished_message": "finished the automation...",
+    "steps": [
+        {
+            "index": 1,
+            "x": 7817,
+            "y": 1058,
+            "delay_seconds": 1
+        },
+        {
+            "index": 2,
+            "x": 7817,
+            "y": 1058,
+            "delay_seconds": 1
+        }
+    ]
+}
