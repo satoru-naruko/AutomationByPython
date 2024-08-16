@@ -86,11 +86,11 @@ if __name__ == "__main__":
 
         config_file = "data/click_config.json"
         config_instance = Config(config_file)
-        click_config = config_instance.get_config()
-        print(click_config)
+        steps = config_instance.get_steps()
+        print(steps)
         
         for _ in range(1):
-            execute_click(click_config)
+            execute_click(steps)
             time.sleep(1)
         
         notifier = LineNotificater()
