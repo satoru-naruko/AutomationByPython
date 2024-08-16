@@ -1,5 +1,6 @@
 from pynput import keyboard
 from config.config import Config
+from lib.line_notificator.line_notificator import LineNotificater
 
 import sys
 import pyautogui
@@ -88,11 +89,17 @@ if __name__ == "__main__":
         click_config = config_instance.get_config()
         print(click_config)
         
-        for _ in range(100):
+        for _ in range(1):
             execute_click(click_config)
             time.sleep(1)
+        
+        notifier = LineNotificater()
+        status = notifier.notify('Helloworld!')
+        print('メッセージ送信結果:', status)
 
     elif argument == "show":
         show_mouse_position()
     else:
         print("unknown options...")
+        
+        
