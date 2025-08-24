@@ -4,3 +4,11 @@ config/__pycache__/config.cpython-312.pyc
 config/__pycache__/__init__.cpython-312.pyc
 lib/line_notificator/__pycache__/__init__.cpython-312.pyc
 lib/line_notificator/__pycache__/line_notificator.cpython-312.pyc
+config/__pycache__/__init__.cpython-313.pyc
+config/__pycache__/config.cpython-313.pyc
+lib/line_notificator/__pycache__/__init__.cpython-313.pyc
+lib/line_notificator/__pycache__/line_notificator.cpython-313.pyc
+lib/mouse_controller/__pycache__/__init__.cpython-313.pyc
+lib/mouse_controller/__pycache__/mouse_controller.cpython-313.pyc
+lib/screen_comparator/__pycache__/__init__.cpython-313.pyc
+lib/screen_comparator/__pycache__/screen_comparator.cpython-313.pyc
