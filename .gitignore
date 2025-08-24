@@ -12,3 +12,5 @@ lib/mouse_controller/__pycache__/__init__.cpython-313.pyc
 lib/mouse_controller/__pycache__/mouse_controller.cpython-313.pyc
 lib/screen_comparator/__pycache__/__init__.cpython-313.pyc
 lib/screen_comparator/__pycache__/screen_comparator.cpython-313.pyc
+lib/esc_down_listener/__pycache__/__init__.cpython-313.pyc
+lib/esc_down_listener/__pycache__/esc_down_listener.cpython-313.pyc
