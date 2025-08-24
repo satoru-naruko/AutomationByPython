@@ -1,7 +1,4 @@
 {
-    "loop_count": 3,
-    "initial_message": "starting the automation...",
-    "finished_message": "finished the automation...",
     "steps": [
         {
             "index": 1,
