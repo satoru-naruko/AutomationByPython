@@ -1,0 +1,85 @@
+{
+    "loop_count": 3,
+    "initial_message": "starting the automation...",
+    "finished_message": "finished the automation...",
+    "steps": [
+        {
+            "index": 1,
+            "x": 3609,
+            "y": 651,
+            "delay_seconds": 3
+        },
+        {
+            "index": 2,
+            "x": 4057,
+            "y": 717,
+            "delay_seconds": 2
+        },
+        {
+            "index": 3,
+            "x": 4057,
+            "y": 717,
+            "delay_seconds": 2
+        },
+        {
+            "index": 5,
+            "x": 3499,
+            "y": 746,
+            "delay_seconds": 2
+        },
+        {
+            "index": 6,
+            "x": 3499,
+            "y": 746,
+            "delay_seconds": 1
+        },
+        {
+            "index": 7,
+            "x": 3499,
+            "y": 400,
+            "delay_seconds": 18
+        },
+        {
+            "index": 8,
+            "x": 3499,
+            "y": 400,
+            "delay_seconds": 2
+        },
+        {
+            "index": 9,
+            "x": 3499,
+            "y": 401,
+            "delay_seconds": 2
+        },
+        {
+            "index": 10,
+            "x": 3499,
+            "y": 398,
+            "delay_seconds": 1
+        },
+        {
+            "index": 11,
+            "x": 3499,
+            "y": 410,
+            "delay_seconds": 1
+        },
+        {
+            "index": 12,
+            "x": 3499,
+            "y": 399,
+            "delay_seconds": 1
+        },
+        {
+            "index": 13,
+            "x": 3499,
+            "y": 401,
+            "delay_seconds": 1
+        },
+        {
+            "index": 14,
+            "x": 3452,
+            "y": 401,
+            "delay_seconds": 1
+        }
+    ]
+}
