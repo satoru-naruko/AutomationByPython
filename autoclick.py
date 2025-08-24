@@ -1,7 +1,8 @@
-from pynput import keyboard
+
 from config.config import Config
 from lib.screen_comparator.screen_comparator import ScreenComparator
 from lib.mouse_controller.mouse_controller import MouseController
+from lib.esc_down_listener.esc_down_listener import EscDownListener
 
 import sys
 import pyautogui
@@ -9,7 +10,7 @@ from datetime import datetime
 import time
 import threading
 
-exit_flag = False
+enter_exit_sequence = False
 mouse = MouseController()
 
 def log_message(message):
@@ -17,11 +18,11 @@ def log_message(message):
     print(f"[{timestamp}] {message}")
 
 def show_mouse_position():
-    global exit_flag
     
     try:
         while True:
-            if exit_flag:
+            if enter_exit_sequence:
+                log_message("Exiting show_mouse_position...")
                 sys.exit(1)
             else:    
                 x, y = pyautogui.position()
@@ -50,34 +51,11 @@ def move_mouse_to(x, y, duration=0.0):
     except Exception as e:
         log_message(f"Error moving mouse: {e}")
 
-class EscDownListener:
-    def __enter__(self):
-        log_message("Listener: Entering the context")
-        self.listener = None
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        log_message("Listener: Exiting the context")
-
-    def on_press(self, key):
-        global exit_flag
-        try:
-            if key == keyboard.Key.esc:
-                log_message("ESC key pressed. Stopping listener.")
-                self.listener.stop()
-                exit_flag = True
-        except Exception as e:
-            log_message(f"Error: {e}")
-
-    def watch_keyboard(self):
-        self.listener = keyboard.Listener(on_press=self.on_press)
-        self.listener.start()
-        self.listener.join()
-
 def execute_click(config):
+    
+    global enter_exit_sequence
+    
     for click_config in sorted(config, key=lambda x: x["index"]):
-        if exit_flag:
-            exit(0)
 
         x, y, delay_seconds = click_config["x"], click_config["y"], click_config["delay_seconds"]
         time.sleep(delay_seconds - 1 )
@@ -114,17 +92,44 @@ def register_expected_area(enable_debug=False):
     comparator.register_expected()
     return comparator
 
+def execute_click_sequence(config_file):
+    config_instance = Config(config_file)
+    steps = config_instance.get_steps()
+    comparator = register_expected_area()
+    
+    for count in range(8):            
+        log_message(f"Starting click sequence... ({count})")
+        execute_click(steps)
+        time.sleep(5)
+        
+        while True:
+            if comparator.compare():
+                log_message("Screen matches expected area. Continuing...")
+                break
+            else:
+                log_message("Screen does not match expected area. Clicking and retrying...")
+                execute_single_click(3490, 400)
+                time.sleep(5)
+
+def exit_program():
+    global enter_exit_sequence
+    
+    log_message("Exiting the program.")
+    enter_exit_sequence = True
+
 if __name__ == "__main__":
   
-      # get commandline arguments
+    enter_exit_sequence = False
+  
+    # get commandline arguments
     if len(sys.argv) < 2:
         print("Usage: python script.py <argument>")
         sys.exit(1)
 
-    listener = EscDownListener()
+    keydownlistener = EscDownListener(exit_program)
 
     # start observe input thered
-    keyboard_thread = threading.Thread(target=listener.watch_keyboard)
+    keyboard_thread = threading.Thread(target=keydownlistener.watch_keyboard)
     keyboard_thread.daemon = True
     keyboard_thread.start()
 
@@ -133,25 +138,16 @@ if __name__ == "__main__":
     if argument == "exec":
 
         config_file = "data/click_config_20250824.json"
-        config_instance = Config(config_file)
-        steps = config_instance.get_steps()
-        print(steps)
         
-        comparator = register_expected_area()
+        click_thread = threading.Thread(
+            target=execute_click_sequence,
+            args=(config_file,)
+        )
+        click_thread.daemon = True
+        click_thread.start()
         
-        for cound in range(8):
-            log_message(f"Starting click sequence... ({cound})") 
-            execute_click(steps)
-            time.sleep(5)
-            
-            while True:
-                if comparator.compare():
-                    log_message("Screen matches expected area. Continuing...")
-                    break  # Exit the loop when screen matches
-                else:
-                    log_message("Screen does not match expected area. Clicking and retrying...")
-                    execute_single_click(3490, 400)
-                    time.sleep(5)  # Wait before retrying
+        while not enter_exit_sequence:
+            time.sleep(1)
 
     elif argument == "show":
         show_mouse_position()
