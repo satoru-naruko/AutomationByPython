@@ -119,8 +119,6 @@ def exit_program():
 
 if __name__ == "__main__":
   
-    enter_exit_sequence = False
-  
     # get commandline arguments
     if len(sys.argv) < 2:
         print("Usage: python script.py <argument>")
