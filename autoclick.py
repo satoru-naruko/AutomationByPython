@@ -3,6 +3,7 @@ from config.config import Config
 from lib.screen_comparator.screen_comparator import ScreenComparator
 from lib.mouse_controller.mouse_controller import MouseController
 from lib.esc_down_listener.esc_down_listener import EscDownListener
+from lib.rect.rect import Rect
 
 import sys
 import pyautogui
@@ -52,65 +53,78 @@ def move_mouse_to(x, y, duration=0.0):
         log_message(f"Error moving mouse: {e}")
 
 def execute_click(config):
-    
-    global enter_exit_sequence
-    
-    for click_config in sorted(config, key=lambda x: x["index"]):
 
-        x, y, delay_seconds = click_config["x"], click_config["y"], click_config["delay_seconds"]
-        time.sleep(delay_seconds - 1 )
+    global enter_exit_sequence
+
+    for index, click_config in enumerate(config, start=1):
+
+        x, y, pre_click_delay = click_config["x"], click_config["y"], click_config["pre_click_delay"]
+        time.sleep(pre_click_delay - 1 )
 
         move_mouse_to(x, y, duration=1.0)
-        log_message(f"Move Mouse at ({x}, {y}) - Index: {click_config['index']}")
+        log_message(f"Move Mouse at ({x}, {y}) - Step: {index}")
         time.sleep(1)
 
         click_at_position(x, y)
-        log_message(f"Clicked at ({x}, {y}) - Index: {click_config['index']}")
+        log_message(f"Clicked at ({x}, {y}) - Step: {index}")
         
 def execute_single_click(x, y):
     click_at_position(x, y)
     log_message(f"Clicked at ({x}, {y})")
         
-def register_expected_area(enable_debug=False):
+def register_expected_area(comparison_region=None, threshold=0.95, enable_debug=False):
 
-    start_x = 2953
-    start_y = 502
-    end_x = 4072
-    end_y = 735
-    
-    width = end_x - start_x
-    height = end_y - start_y
-    
+    rect = Rect.from_dict(comparison_region)
+
     comparator = ScreenComparator(
-        region=(start_x, start_y, width, height),
-        threshold=0.95
+        region=rect.to_region_tuple(),
+        threshold=threshold
     )
-    
+
     if enable_debug:
         comparator.enable_debug_mode()
-    
+
     comparator.register_expected()
     return comparator
 
 def execute_click_sequence(config_file):
     config_instance = Config(config_file)
     steps = config_instance.get_steps()
-    comparator = register_expected_area()
-    
-    for count in range(8):            
+    loop_count = config_instance.get_loop_count()
+    comparison_region = config_instance.get_comparison_region()
+    standby_position = config_instance.get_standby_position()
+    comparison_threshold = config_instance.get_comparison_threshold()
+    retry_delay = config_instance.get_retry_delay_seconds()
+    post_sequence_delay = config_instance.get_post_sequence_delay_seconds()
+
+    comparator = register_expected_area(
+        comparison_region=comparison_region,
+        threshold=comparison_threshold,
+        enable_debug=False
+    )
+
+    if loop_count <= 0:
+        log_message("Loop count is set to 0 or less. Exiting click sequence default value(1).")
+        loop_count = 1
+
+    for count in range(1, loop_count + 1):
         log_message(f"Starting click sequence... ({count})")
         execute_click(steps)
-        time.sleep(5)
-        
+        time.sleep(post_sequence_delay)
+
         while True:
             if comparator.compare():
                 log_message("Screen matches expected area. Continuing...")
                 break
             else:
                 log_message("Screen does not match expected area. Clicking and retrying...")
-                execute_single_click(3490, 400)
-                time.sleep(5)
+                execute_single_click(standby_position["x"], standby_position["y"])
+                time.sleep(retry_delay)
 
+    log_message("Click sequence completed.")
+    global enter_exit_sequence
+    enter_exit_sequence = True
+    
 def exit_program():
     global enter_exit_sequence
     
@@ -135,7 +149,7 @@ if __name__ == "__main__":
     
     if argument == "exec":
 
-        config_file = "data/click_config_20250824.json"
+        config_file = "data/config.json"
         
         click_thread = threading.Thread(
             target=execute_click_sequence,
