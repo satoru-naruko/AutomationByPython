@@ -7,6 +7,11 @@ class Config:
         self.loop_count = None
         self.initial_message = None
         self.steps = None
+        self.comparison_region = None
+        self.standby_position = None
+        self.comparison_threshold = None
+        self.retry_delay_seconds = None
+        self.post_sequence_delay_seconds = None
 
     def load_config(self):
         try:
@@ -15,7 +20,12 @@ class Config:
                 self.validate_config(config)
                 self.loop_count = config.get("loop_count", 1)  # デフォルトでは1回
                 self.initial_message = config.get("initial_message", "")
-                self.steps = sorted(config.get("steps", []), key=lambda x: x.get("index", float('inf')))
+                self.steps = config.get("steps", [])
+                self.comparison_region = config.get("comparison_region", None)
+                self.standby_position = config.get("standby_position", {"x": 100, "y": 100})
+                self.comparison_threshold = config.get("comparison_threshold", 0.95)
+                self.retry_delay_seconds = config.get("retry_delay_seconds", 5)
+                self.post_sequence_delay_seconds = config.get("post_sequence_delay_seconds", 5)
                 self.config = config
         except (json.JSONDecodeError, ValueError) as e:
             raise ValueError(f"Error loading configuration from {self.file_path}: {e}")
@@ -23,9 +33,6 @@ class Config:
     def validate_config(self, config):
         if "steps" not in config:
             raise ValueError("'steps' key is missing in the configuration.")
-        for click_config in config["steps"]:
-            if 'index' not in click_config:
-                raise ValueError("'index' key is missing in one of the steps.")
     
     def get_loop_count(self):
         if self.config is None:
@@ -41,3 +48,28 @@ class Config:
         if self.config is None:
             self.load_config()
         return self.steps
+
+    def get_comparison_region(self):
+        if self.config is None:
+            self.load_config()
+        return self.comparison_region
+
+    def get_standby_position(self):
+        if self.config is None:
+            self.load_config()
+        return self.standby_position
+
+    def get_comparison_threshold(self):
+        if self.config is None:
+            self.load_config()
+        return self.comparison_threshold
+
+    def get_retry_delay_seconds(self):
+        if self.config is None:
+            self.load_config()
+        return self.retry_delay_seconds
+
+    def get_post_sequence_delay_seconds(self):
+        if self.config is None:
+            self.load_config()
+        return self.post_sequence_delay_seconds

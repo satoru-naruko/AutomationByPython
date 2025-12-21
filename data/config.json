@@ -1,0 +1,29 @@
+{
+    "loop_count": 2,
+    "initial_message": "starting the automation...",
+    "finished_message": "finished the automation...",
+    "comparison_region": {
+        "start_x": 3557,
+        "start_y": 237,
+        "end_x": 4180,
+        "end_y": 291
+    },
+    "standby_position": {
+        "x": 3870,
+        "y": 310
+    },
+    "comparison_threshold": 0.95,
+    "retry_delay_seconds": 5,
+    "post_sequence_delay_seconds": 5,
+    "steps": [
+        { "x": 4332, "y": 747, "pre_click_delay": 4 },
+        { "x": 4331, "y": 746, "pre_click_delay": 4 },
+        { "x": 3833, "y": 719, "pre_click_delay": 2 },
+        { "x": 3833, "y": 719, "pre_click_delay": 2 },
+        { "x": 3520, "y": 311, "pre_click_delay": 290 },
+        { "x": 3520, "y": 311, "pre_click_delay": 2 },
+        { "x": 3520, "y": 313, "pre_click_delay": 2 },
+        { "x": 3520, "y": 312, "pre_click_delay": 2 },
+        { "x": 3520, "y": 314, "pre_click_delay": 2 }
+    ]
+}
