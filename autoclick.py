@@ -73,10 +73,10 @@ def execute_single_click(x, y):
         
 def register_expected_area(enable_debug=False):
 
-    start_x = 2953
-    start_y = 502
-    end_x = 4072
-    end_y = 735
+    start_x = 3557
+    start_y = 237
+    end_x = 4180
+    end_y = 291
     
     width = end_x - start_x
     height = end_y - start_y
@@ -95,9 +95,14 @@ def register_expected_area(enable_debug=False):
 def execute_click_sequence(config_file):
     config_instance = Config(config_file)
     steps = config_instance.get_steps()
-    comparator = register_expected_area()
+    loop_count = config_instance.get_loop_count()
+    comparator = register_expected_area(enable_debug=False)
     
-    for count in range(8):            
+    if loop_count <= 0:
+        log_message("Loop count is set to 0 or less. Exiting click sequence default value(1).")
+        loop_count = 1
+    
+    for count in range(1, loop_count + 1):            
         log_message(f"Starting click sequence... ({count})")
         execute_click(steps)
         time.sleep(5)
@@ -110,7 +115,11 @@ def execute_click_sequence(config_file):
                 log_message("Screen does not match expected area. Clicking and retrying...")
                 execute_single_click(3490, 400)
                 time.sleep(5)
-
+    
+    log_message("Click sequence completed.")            
+    global enter_exit_sequence
+    enter_exit_sequence = True
+    
 def exit_program():
     global enter_exit_sequence
     
@@ -135,7 +144,7 @@ if __name__ == "__main__":
     
     if argument == "exec":
 
-        config_file = "data/click_config_20250824.json"
+        config_file = "data/click_config_20251222.json"
         
         click_thread = threading.Thread(
             target=execute_click_sequence,
