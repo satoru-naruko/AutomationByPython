@@ -1,0 +1,33 @@
+{
+    "description": "Surface Pro 7 single-display variant of data/config.json. Coordinates are relative positions of the multi-display config's right monitor (origin 2560,0 / 2560x1440) rescaled to the Surface Pro 7 panel (2736x1824 physical pixels, x1.06875 / y1.26667).",
+    "target_display": {
+        "name": "Surface Pro 7 (single display)",
+        "width": 2736,
+        "height": 1824,
+        "note": "mss calls SetProcessDPIAware(), so pyautogui coordinates are physical pixels, not the 200%-scaled 1368x912 logical size."
+    },
+    "loop_count": 15,
+    "initial_message": "starting the automation...",
+    "finished_message": "finished the automation...",
+    "comparison_region": {
+        "start_x": 1644,
+        "start_y": 799,
+        "end_x": 1948,
+        "end_y": 841
+    },
+    "standby_position": {
+        "x": 1678,
+        "y": 590
+    },
+    "comparison_threshold": 0.98,
+    "retry_delay_seconds": 2,
+    "post_sequence_delay_seconds": 2,
+    "steps": [
+        { "x": 1794, "y": 859, "pre_click_delay": 3 },
+        { "x": 1432, "y": 859, "pre_click_delay": 3 },
+        { "x": 1898, "y": 939, "pre_click_delay": 2 },
+        { "x": 1360, "y": 963, "pre_click_delay": 2 },
+        { "x": 1360, "y": 963, "pre_click_delay": 2 },
+        { "x": 1678, "y": 590, "pre_click_delay": 3 }
+    ]
+}
