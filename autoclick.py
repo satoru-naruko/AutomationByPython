@@ -149,7 +149,7 @@ if __name__ == "__main__":
     
     if argument == "exec":
 
-        config_file = "data/config.json"
+        config_file = "data/config-surface.json"
         
         click_thread = threading.Thread(
             target=execute_click_sequence,
