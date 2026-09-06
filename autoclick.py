@@ -88,6 +88,9 @@ def register_expected_area(comparison_region=None, threshold=0.95, enable_debug=
     return comparator
 
 def execute_click_sequence(config_file):
+
+    global enter_exit_sequence
+
     config_instance = Config(config_file)
     steps = config_instance.get_steps()
     loop_count = config_instance.get_loop_count()
@@ -96,21 +99,33 @@ def execute_click_sequence(config_file):
     comparison_threshold = config_instance.get_comparison_threshold()
     retry_delay = config_instance.get_retry_delay_seconds()
     post_sequence_delay = config_instance.get_post_sequence_delay_seconds()
+    screen_verification_enabled = config_instance.is_screen_verification_enabled()
 
-    comparator = register_expected_area(
-        comparison_region=comparison_region,
-        threshold=comparison_threshold,
-        enable_debug=False
-    )
+    if screen_verification_enabled:
+        comparator = register_expected_area(
+            comparison_region=comparison_region,
+            threshold=comparison_threshold,
+            enable_debug=False
+        )
+    else:
+        comparator = None
+        log_message("Screen verification is disabled. Repeating steps without comparison.")
 
     if loop_count <= 0:
         log_message("Loop count is set to 0 or less. Exiting click sequence default value(1).")
         loop_count = 1
 
     for count in range(1, loop_count + 1):
+        if enter_exit_sequence:
+            log_message("Exit requested. Stopping click sequence...")
+            return
+
         log_message(f"Starting click sequence... ({count})")
         execute_click(steps)
         time.sleep(post_sequence_delay)
+
+        if comparator is None:
+            continue
 
         while True:
             if comparator.compare():
@@ -122,7 +137,6 @@ def execute_click_sequence(config_file):
                 time.sleep(retry_delay)
 
     log_message("Click sequence completed.")
-    global enter_exit_sequence
     enter_exit_sequence = True
     
 def exit_program():
@@ -149,7 +163,7 @@ if __name__ == "__main__":
     
     if argument == "exec":
 
-        config_file = "data/config.json"
+        config_file = sys.argv[2] if len(sys.argv) > 2 else "data/config.json"
         
         click_thread = threading.Thread(
             target=execute_click_sequence,

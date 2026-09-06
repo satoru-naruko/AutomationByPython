@@ -1,0 +1,11 @@
+{
+    "description": "Sample config for repeating steps without screen verification. No comparison_region / standby_position is needed; the sequence is simply repeated loop_count times with post_sequence_delay_seconds between loops.",
+    "screen_verification": false,
+    "loop_count": 29,
+    "initial_message": "starting the automation...",
+    "finished_message": "finished the automation...",
+    "post_sequence_delay_seconds": 2,
+    "steps": [
+        { "x": 4284, "y": 680, "pre_click_delay": 5 }
+    ]
+}
